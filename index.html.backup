@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador PagPrime</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Simulador PagPrime</h1>
+
+  <!-- TOGGLE -->
+  <div class="toggle-container">
+    <span>Sem Antecipação</span>
+    <label class="switch">
+      <input type="checkbox" id="toggleAntecipacao">
+      <span class="slider"></span>
+    </label>
+    <span>Antecipado</span>
+  </div>
+    <div class="toggle-container">
+      <span>Sem Antecipação</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleAntecipacao">
+        <span class="slider"></span>
+      </label>
+      <span>Antecipado</span>
+    </div>
+  </header>
+
+  <!-- CONFIG -->
+  <div class="card config">
+    <h2>Configuração</h2>
+
+    <div class="advanced-field">
+      <label>Taxa de Antecipação (%)</label>
+      <input id="antecipacao" type="number" step="0.01" value="1.97" disabled>
+    </div>
+
+    <h3>MDR (%)</h3>
+
+    <label>Pix</label>
+    <input id="pix" type="number" step="0.01" value="1.99">
+
+    <label>Débito</label>
+    <input id="debito" type="number" step="0.01" value="1.99">
+
+    <label>À vista</label>
+    <input id="avista" type="number" step="0.01" value="2.49">
+
+    <label>2x a 6x</label>
+    <input id="mdr_2_6" type="number" step="0.01" value="4.09">
+
+    <label>7x a 12x</label>
+    <input id="mdr_7_12" type="number" step="0.01" value="5.09">
+  </div>
+
+  <!-- COBRANÇAS -->
+  <div class="card charges">
+    <h2>Cobranças</h2>
+
+    <div class="charge-item">
+      <label class="checkbox-label">
+        <input type="checkbox" id="aluguelToggle">
+        <span class="checkmark"></span>
+        Aluguel Máquina
+      </label>
+      <input id="aluguel" type="number" value="69.90" placeholder="R$">
+    </div>
+
+    <div class="charge-item">
+      <label class="checkbox-label">
+        <input type="checkbox" id="manutencaoToggle">
+        <span class="checkmark"></span>
+        Manutenção Conta
+      </label>
+      <div class="fixed-value">R$ 19,90</div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="resultado" class="card result">
+    <h2>Taxas</h2>
+    <div id="result-content"></div>
+  </div>
+
+  <!-- CONTAINER PARA IMAGEM -->
+  <div id="imagem-container" class="hidden">
+    <div class="image-card">
+      <h2>Taxas Calculadas</h2>
+      <div id="image-content"></div>
+      <footer>Simulador PagPrime</footer>
+    </div>
+  </div>
+
+  <button onclick="gerarImagem()" class="gerar">📸 Gerar Imagem</button>
+
+</div>
+
+<script src="script.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+</body>
+</html>
