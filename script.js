@@ -3,21 +3,18 @@
 // =============================
 
 function parseNumero(valor) {
+    if (valor === null || valor === undefined) return 0;
+
     if (typeof valor === "number") return valor;
 
-    if (!valor) return 0;
+    const limpo = String(valor)
+        .trim()
+        .replace(/\./g, "")
+        .replace(",", ".");
 
-    valor = String(valor).trim();
-    valor = valor.replace(/[^\d,.-]/g, "");
+    const num = Number(limpo);
 
-    if (valor.includes(",")) {
-        valor = valor.replace(/\./g, "");
-        valor = valor.replace(",", ".");
-    }
-
-    const numero = Number(valor);
-
-    return isNaN(numero) ? 0 : numero;
+    return isNaN(num) ? 0 : num;
 }
 
 function arredondar2(valor) {
@@ -75,21 +72,43 @@ function obterElementos() {
 function obterDadosFormulario() {
     const elementos = obterElementos();
 
+    let taxaAntecipacao = parseNumero(elementos.antecipacao.value);
+    let pix = parseNumero(elementos.pix.value);
+    let debito = parseNumero(elementos.debito.value);
+    let avista = parseNumero(elementos.avista.value);
+    let mdr_2_6 = parseNumero(elementos.mdr26.value);
+    let mdr_7_12 = parseNumero(elementos.mdr712.value);
+    let aluguel = parseNumero(elementos.aluguel.value);
+
+    if (isNaN(taxaAntecipacao)) taxaAntecipacao = 0;
+    if (isNaN(pix)) pix = 0;
+    if (isNaN(debito)) debito = 0;
+    if (isNaN(avista)) avista = 0;
+    if (isNaN(mdr_2_6)) mdr_2_6 = 0;
+    if (isNaN(mdr_7_12)) mdr_7_12 = 0;
+    if (isNaN(aluguel)) aluguel = 0;
+
     return {
         antecipado: elementos.toggleAntecipacao.checked,
-        taxaAntecipacao: parseNumero(elementos.antecipacao.value),
-        pix: parseNumero(elementos.pix.value),
-        debito: parseNumero(elementos.debito.value),
-        avista: parseNumero(elementos.avista.value),
-        mdr_2_6: parseNumero(elementos.mdr26.value),
-        mdr_7_12: parseNumero(elementos.mdr712.value),
+        taxaAntecipacao,
+        pix,
+        debito,
+        avista,
+        mdr_2_6,
+        mdr_7_12,
         aluguelAtivo: elementos.aluguelToggle.checked,
-        aluguel: parseNumero(elementos.aluguel.value),
+        aluguel,
         manutencaoAtiva: elementos.manutencaoToggle.checked
     };
 }
 
 function criarLinhasResultado(dados) {
+    if (isNaN(dados.pix)) dados.pix = 0;
+    if (isNaN(dados.debito)) dados.debito = 0;
+    if (isNaN(dados.avista)) dados.avista = 0;
+    if (isNaN(dados.mdr_2_6)) dados.mdr_2_6 = 0;
+    if (isNaN(dados.mdr_7_12)) dados.mdr_7_12 = 0;
+
     const linhas = [
         { label: "Pix", valor: `${dados.pix.toFixed(2)}%` },
         { label: "Débito", valor: `${dados.debito.toFixed(2)}%` }
@@ -110,7 +129,8 @@ function criarLinhasResultado(dados) {
         else if (i <= 6) mdr = dados.mdr_2_6;
         else mdr = dados.mdr_7_12;
 
-        const taxa = calcularTaxaFinal(i, mdr, dados.taxaAntecipacao);
+        let taxa = calcularTaxaFinal(i, mdr, dados.taxaAntecipacao);
+        if (isNaN(taxa)) return linhas;
 
         linhas.push({
             label: `${i}x`,
@@ -123,6 +143,8 @@ function criarLinhasResultado(dados) {
 
 function criarResumoCobrancas(dados) {
     const cobrancas = [];
+
+    if (isNaN(dados.aluguel)) dados.aluguel = 0;
 
     if (dados.aluguelAtivo) {
         cobrancas.push(`Aluguel da máquina: R$ ${dados.aluguel.toFixed(2)}`);
@@ -167,9 +189,11 @@ function criarLinhasImagem(dados) {
 
     for (let i = 1; i <= 12; i++) {
         const mdr = obterMdrPorParcela(i, dados);
-        const taxa = dados.antecipado
+        let taxa = dados.antecipado
             ? calcularTaxaFinal(i, mdr, dados.taxaAntecipacao)
             : arredondar2(mdr);
+
+        if (isNaN(taxa)) return linhas;
 
         linhas.push({
             label: i === 1 ? "À vista" : `${i}x`,
@@ -190,6 +214,11 @@ function dividirLinhasImagem(linhas) {
 function montarMarkupImagem(dados) {
     const tabela = criarLinhasImagem(dados);
     const { colunaEsquerda, colunaDireita } = dividirLinhasImagem(tabela);
+
+    if (isNaN(dados.pix)) dados.pix = 0;
+    if (isNaN(dados.debito)) dados.debito = 0;
+    if (isNaN(dados.aluguel)) dados.aluguel = 0;
+
     const cobrancasMarkup = [
         dados.aluguelAtivo
             ? `
@@ -308,7 +337,6 @@ function gerarTabela() {
 // =============================
 
 function gerarImagem() {
-
     const elemento = document.getElementById("imageExport");
     const stage = document.getElementById("imagem-container");
 
@@ -319,55 +347,50 @@ function gerarImagem() {
 
     if (stage) {
         stage.style.opacity = "1";
-        stage.style.pointerEvents = "auto";
+        stage.style.position = "fixed";
+        stage.style.top = "0";
+        stage.style.left = "0";
     }
 
     setTimeout(() => {
         html2canvas(elemento, {
             scale: 2,
             useCORS: true,
-            allowTaint: true,
             backgroundColor: "#ffffff",
-            logging: true
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 800,
+            windowHeight: elemento.scrollHeight
         }).then(canvas => {
-
-            canvas.toBlob(function(blob) {
+            canvas.toBlob(blob => {
                 if (!blob) {
                     alert("Erro ao gerar imagem");
-                    if (stage) {
-                        stage.style.opacity = "0";
-                        stage.style.pointerEvents = "none";
-                    }
                     return;
                 }
 
                 const url = URL.createObjectURL(blob);
 
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "simulacao.png";
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "simulacao.png";
 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    window.open(url);
+                }
 
                 URL.revokeObjectURL(url);
 
-                if (stage) {
-                    stage.style.opacity = "0";
-                    stage.style.pointerEvents = "none";
-                }
+                if (stage) stage.style.opacity = "0";
             });
-
         }).catch(err => {
-            console.error("Erro real:", err);
-            alert("Erro ao gerar imagem. Veja console.");
-            if (stage) {
-                stage.style.opacity = "0";
-                stage.style.pointerEvents = "none";
-            }
+            console.error(err);
+            alert("Erro ao gerar imagem");
         });
-    }, 100);
+    }, 200);
 }
 
 function configurarAntecipacaoAvancada() {
