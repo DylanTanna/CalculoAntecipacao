@@ -459,9 +459,7 @@ input[type="number"]:disabled {
 .export-stage {
   position: fixed;
   top: 0;
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
+  left: -9999px;
   width: 1080px;
   padding: 32px;
   background: #ffffff;
@@ -470,57 +468,27 @@ input[type="number"]:disabled {
 .image-card {
   background: #fff;
   border-radius: 32px;
-  overflow: hidden;
   box-shadow: 0 28px 60px rgba(37, 42, 79, 0.18);
   border: 1px solid rgba(91, 60, 196, 0.12);
-  width: 100%;
-  max-width: 840px;
+  width: 900px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.image-card-header {
-  position: relative;
-  padding: 28px 30px 22px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbf9ff 100%);
-  text-align: left;
+.image-header {
+  padding: 24px 30px 18px;
+  display: flex;
+  justify-content: center;
 }
 
-.image-brand-row {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 18px;
+.logo {
+  display: block;
+  width: 180px;
+  max-width: 100%;
+  height: auto;
 }
 
-.image-section-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.image-hero-copy {
-  position: relative;
-  z-index: 1;
-}
-
-.image-card-header h2 {
-  font-size: 2.3rem;
-  line-height: 1.02;
-  max-width: 360px;
-}
-
-.image-header-glow {
-  position: absolute;
-  top: -60px;
-  right: -40px;
-  width: 250px;
-  height: 250px;
-  border-radius: 48px;
-  background: radial-gradient(circle at center, rgba(123, 89, 240, 0.95) 0%, rgba(91, 60, 196, 0.88) 50%, rgba(91, 60, 196, 0) 72%);
-  transform: rotate(-18deg);
-}
-
+.top-cards,
 .image-highlight-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -636,19 +604,6 @@ input[type="number"]:disabled {
   font-size: 0.82rem;
 }
 
-.image-footer {
-  display: grid;
-  gap: 4px;
-  padding: 0 30px 28px;
-  text-align: center;
-  font-size: 0.92rem;
-  color: var(--muted);
-}
-
-.image-footer strong {
-  color: var(--text);
-}
-
 @media (min-width: 860px) {
   .hero-card {
     grid-template-columns: 1.5fr 1fr;
@@ -700,22 +655,11 @@ input[type="number"]:disabled {
     display: grid;
   }
 
-  .image-card-header {
-    padding: 24px 22px 18px;
+  .image-header {
+    padding: 22px 22px 16px;
   }
 
-  .image-card-header h2 {
-    font-size: 1.9rem;
-    max-width: 260px;
-  }
-
-  .image-header-glow {
-    width: 180px;
-    height: 180px;
-    top: -34px;
-    right: -46px;
-  }
-
+  .top-cards,
   .image-highlight-grid {
     grid-template-columns: 1fr;
     padding: 0 22px 18px;
@@ -735,7 +679,7 @@ input[type="number"]:disabled {
     align-items: flex-start;
   }
 
-  .image-footer {
-    padding: 0 22px 24px;
+  .logo {
+    width: 150px;
   }
 }

@@ -172,7 +172,7 @@ function criarLinhasImagem(dados) {
             : arredondar2(mdr);
 
         linhas.push({
-            label: `${i}x`,
+            label: i === 1 ? "À vista" : `${i}x`,
             valor: `${taxa.toFixed(2)}%`
         });
     }
@@ -190,8 +190,9 @@ function dividirLinhasImagem(linhas) {
 function montarMarkupImagem(dados) {
     const tabela = criarLinhasImagem(dados);
     const { colunaEsquerda, colunaDireita } = dividirLinhasImagem(tabela);
-    const aluguelMarkup = dados.aluguelAtivo
-        ? `
+    const cobrancasMarkup = [
+        dados.aluguelAtivo
+            ? `
             <div class="image-charge-row">
                 <div class="image-charge-copy">
                     <span class="image-charge-icon">✓</span>
@@ -200,10 +201,22 @@ function montarMarkupImagem(dados) {
                 <strong>R$ ${dados.aluguel.toFixed(2)}</strong>
             </div>
         `
-        : "";
+            : "",
+        dados.manutencaoAtiva
+            ? `
+            <div class="image-charge-row">
+                <div class="image-charge-copy">
+                    <span class="image-charge-icon">✓</span>
+                    <span>Manutenção da conta</span>
+                </div>
+                <strong>R$ 19,90</strong>
+            </div>
+        `
+            : ""
+    ].join("");
 
     return `
-        <div class="image-highlight-grid">
+        <div class="top-cards image-highlight-grid">
             <div class="image-highlight-card">
                 <span class="image-highlight-label">PIX</span>
                 <strong class="image-highlight-value">${dados.pix.toFixed(2)}%</strong>
@@ -215,7 +228,7 @@ function montarMarkupImagem(dados) {
         </div>
         <section class="image-credit-section">
             <div class="image-credit-header">
-                <span class="image-credit-title">CRÉDITO PARCELADO</span>
+                <span class="image-credit-title">CRÉDITO</span>
                 <p class="image-credit-subtitle">Taxas com antecipação</p>
             </div>
             <div class="image-credit-table">
@@ -237,7 +250,7 @@ function montarMarkupImagem(dados) {
                 </div>
             </div>
         </section>
-        ${aluguelMarkup}
+        ${cobrancasMarkup}
     `;
 }
 
@@ -249,13 +262,17 @@ function atualizarIndicadorModo(antecipado) {
         label.classList.toggle("is-active", ativo);
     });
 
-    modeHint.textContent = antecipado
-        ? "Visualizando taxas com antecipação aplicada."
-        : "Visualizando taxas sem antecipação.";
+    if (modeHint) {
+        modeHint.textContent = antecipado
+            ? "Visualizando taxas com antecipação aplicada."
+            : "Visualizando taxas sem antecipação.";
+    }
 
-    imageModeLabel.textContent = antecipado
-        ? "Simulação com antecipação"
-        : "Simulação sem antecipação";
+    if (imageModeLabel) {
+        imageModeLabel.textContent = antecipado
+            ? "Simulação com antecipação"
+            : "Simulação sem antecipação";
+    }
 }
 
 // =============================
@@ -271,8 +288,13 @@ function gerarTabela() {
         const cobrancas = criarResumoCobrancas(dados);
         const markup = montarMarkupResultado(linhas, cobrancas);
 
-        elementos.resultContent.innerHTML = markup;
-        elementos.imageContent.innerHTML = montarMarkupImagem(dados);
+        if (elementos.resultContent) {
+            elementos.resultContent.innerHTML = markup;
+        }
+
+        if (elementos.imageContent) {
+            elementos.imageContent.innerHTML = montarMarkupImagem(dados);
+        }
 
         atualizarIndicadorModo(dados.antecipado);
     } catch (erro) {
@@ -290,33 +312,70 @@ function gerarImagem() {
     const elemento = document.getElementById("imageExport");
     const stage = document.getElementById("imagem-container");
 
-    if (!elemento || !stage) {
-        alert("Nada para gerar imagem.");
+    if (!elemento) {
+        alert("Elemento não encontrado");
         return;
     }
 
-    // 🔥 TORNA O CONTAINER VISÍVEL
-    stage.style.opacity = "1";
+    if (stage) {
+        stage.style.opacity = "1";
+        stage.style.pointerEvents = "auto";
+    }
 
     setTimeout(() => {
         html2canvas(elemento, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
             backgroundColor: "#ffffff",
-            scale: 2
+            logging: true
         }).then(canvas => {
 
-            const link = document.createElement("a");
-            link.download = "taxas-pagprime.png";
-            link.href = canvas.toDataURL("image/png");
-            link.click();
+            canvas.toBlob(function(blob) {
+                if (!blob) {
+                    alert("Erro ao gerar imagem");
+                    if (stage) {
+                        stage.style.opacity = "0";
+                        stage.style.pointerEvents = "none";
+                    }
+                    return;
+                }
 
-            // 🔒 VOLTA AO NORMAL
-            stage.style.opacity = "0";
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "simulacao.png";
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                URL.revokeObjectURL(url);
+
+                if (stage) {
+                    stage.style.opacity = "0";
+                    stage.style.pointerEvents = "none";
+                }
+            });
+
+        }).catch(err => {
+            console.error("Erro real:", err);
+            alert("Erro ao gerar imagem. Veja console.");
+            if (stage) {
+                stage.style.opacity = "0";
+                stage.style.pointerEvents = "none";
+            }
         });
-    }, 50);
+    }, 100);
 }
 
 function configurarAntecipacaoAvancada() {
     const { antecipacao, editarAntecipacao } = obterElementos();
+
+    if (!antecipacao || !editarAntecipacao) {
+        return;
+    }
 
     function solicitarEdicao() {
         if (!antecipacao.disabled) {
@@ -380,6 +439,10 @@ function configurarCliqueCobrancas() {
 
 function configurarToggleModo() {
     const { toggleAntecipacao, modeButtons } = obterElementos();
+
+    if (!toggleAntecipacao) {
+        return;
+    }
 
     modeButtons.forEach((botao) => {
         botao.addEventListener("click", () => {
