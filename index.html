@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,151 +7,147 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main class="app-shell">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <span class="eyebrow">Simulador financeiro</span>
+        <h1>Simulador PagPrime</h1>
+        <p>Consulte taxas de forma clara, com atualização instantânea e visual preparado para compartilhamento.</p>
+      </div>
+    </section>
 
-<div class="container">
+    <section class="panel-grid">
+      <div class="card config-card">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">Parâmetros</span>
+            <h2>Configuração</h2>
+          </div>
+        </div>
 
-  <header>
-    <h1>Simulador PagPrime</h1>
-  <!-- TOGGLE -->
-  <div class="toggle-container">
-    <span>Sem Antecipação</span>
-    <label class="switch">
-      <input type="checkbox" id="toggleAntecipacao">
-      <span class="slider"></span>
-    </label>
-    <span>Antecipado</span>
-  </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>Pix</span>
+            <input id="pix" type="number" step="0.01" value="1.99">
+          </label>
 
-  <!-- TOGGLE -->
-  <div class="toggle-container">
-    <span>Sem Antecipação</span>
-    <label class="switch">
-      <input type="checkbox" id="toggleAntecipacao">
-      <span class="slider"></span>
-    </label>
-    <span>Antecipado</span>
-  </div>
-    <div class="toggle-container">
-      <span>Sem Antecipação</span>
-      <label class="switch">
-        <input type="checkbox" id="toggleAntecipacao">
-        <span class="slider"></span>
-      </label>
-      <span>Antecipado</span>
-    </div>
-  </header>
+          <label class="field">
+            <span>Débito</span>
+            <input id="debito" type="number" step="0.01" value="1.99">
+          </label>
 
-  <!-- CONFIG -->
-  <div class="card config">
-    <h2>Configuração</h2>
+          <label class="field">
+            <span>À vista</span>
+            <input id="avista" type="number" step="0.01" value="2.49">
+          </label>
 
-    <div class="advanced-field">
-      <div class="advanced-field">
-    <label>Taxa de Antecipação (%)</label>
-      <input id="antecipacao" type="number" step="0.01" value="1.97" disabled>
-    </div>
+          <label class="field">
+            <span>2x a 6x</span>
+            <input id="mdr_2_6" type="number" step="0.01" value="4.09">
+          </label>
 
-    <h3>MDR (%)</h3>
+          <label class="field">
+            <span>7x a 12x</span>
+            <input id="mdr_7_12" type="number" step="0.01" value="5.09">
+          </label>
+        </div>
 
-    <label>Pix</label>
-    <input id="pix" type="number" step="0.01" value="1.99">
+        <div class="advanced-box">
+          <div class="advanced-copy">
+            <span class="advanced-tag">Avançado</span>
+            <label for="antecipacao">Taxa de antecipação (%)</label>
+            <small>Edite apenas se realmente precisar revisar a condição aplicada.</small>
+          </div>
+          <div class="advanced-control">
+            <input id="antecipacao" type="number" step="0.01" value="1.97" disabled>
+            <button type="button" id="editarAntecipacao" class="secondary-button">Alterar</button>
+          </div>
+        </div>
+      </div>
 
-    <label>Débito</label>
-    <input id="debito" type="number" step="0.01" value="1.99">
+      <div class="card charges-card">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">Custos fixos</span>
+            <h2>Cobranças</h2>
+          </div>
+        </div>
 
-    <label>À vista</label>
-    <input id="avista" type="number" step="0.01" value="2.49">
+        <div class="charges-list">
+          <div class="charge-item">
+            <div class="charge-topline">
+              <div class="checkbox-wrap">
+                <input type="checkbox" id="aluguelToggle">
+                <span class="fake-checkbox"></span>
+              </div>
+              <label class="charge-text" for="aluguelToggle">
+                <strong>Aluguel da máquina</strong>
+                <span>Aplicar custo mensal no resumo</span>
+              </label>
+            </div>
+            <input id="aluguel" class="charge-value-input" type="number" step="0.01" value="69.90" placeholder="69,90">
+          </div>
 
-    <label>2x a 6x</label>
-    <input id="mdr_2_6" type="number" step="0.01" value="4.09">
+          <div class="charge-item">
+            <div class="charge-topline">
+              <div class="checkbox-wrap">
+                <input type="checkbox" id="manutencaoToggle">
+                <span class="fake-checkbox"></span>
+              </div>
+              <label class="charge-text" for="manutencaoToggle">
+                <strong>Manutenção da conta</strong>
+                <span>Taxa fixa mensal adicional</span>
+              </label>
+            </div>
+            <div class="charge-fixed-value">R$ 19,90</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <label>7x a 12x</label>
-    <input id="mdr_7_12" type="number" step="0.01" value="5.09">
-  </div>
+    <section id="resultado" class="card result-card">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Simulação</span>
+          <h2>Taxas</h2>
+        </div>
+      </div>
+      <div class="mode-switch-card mode-switch-card-inline">
+        <div class="mode-labels">
+          <button type="button" class="mode-label-button" data-mode-target="off">
+            <span class="mode-label" data-mode-label="off">Sem antecipação</span>
+          </button>
+          <label class="switch" aria-label="Alternar antecipação">
+            <input type="checkbox" id="toggleAntecipacao" checked>
+            <span class="slider"></span>
+          </label>
+          <button type="button" class="mode-label-button" data-mode-target="on">
+            <span class="mode-label is-active" data-mode-label="on">Antecipado</span>
+          </button>
+        </div>
+        <p id="modeHint" class="mode-hint">Visualizando taxas com antecipação aplicada.</p>
+      </div>
+      <div id="result-content"></div>
+    </section>
 
-  <!-- COBRANÇAS -->
-  <div class="card charges">
-    <h2>Cobranças</h2>
+    <section class="actions-bar">
+      <button type="button" onclick="gerarImagem()" class="primary-button">Gerar imagem</button>
+    </section>
+  </main>
 
-    <div class="charge-item">
-      <label class="checkbox-label">
-        <input type="checkbox" id="aluguelToggle">
-        <span class="checkmark"></span>
-        Aluguel Máquina
-      </label>
-      <input id="aluguel" type="number" value="69.90" placeholder="R$">
-    </div>
-
-    <div class="charge-item">
-      <label class="checkbox-label">
-        <input type="checkbox" id="manutencaoToggle">
-        <span class="checkmark"></span>
-        Manutenção Conta
-      </label>
-      <div class="fixed-value">R$ 19,90</div>
-    </div>
-  </div>
-
-    <div class="charge-item">
-      <label class="checkbox-label">
-        <input type="checkbox" id="manutencaoToggle">
-        <span class="checkmark"></span>
-        Manutenção Conta
-      </label>
-      <div class="fixed-value">R$ 19,90</div>
-    </div>
-  </div>
-  <div class="card charges">
-    <h2>Cobranças</h2>
-
-    <div class="charge-item">
-      <label class="checkbox-label">
-        <input type="checkbox" id="aluguelToggle">
-        <span class="checkmark"></span>
-        Aluguel Máquina
-      </label>
-      <input id="aluguel" type="number" value="69.90" placeholder="R$">
-    </div>
-
-    <div class="charge-item">
-      <label class="checkbox-label">
-        <input type="checkbox" id="manutencaoToggle">
-        <span class="checkmark"></span>
-        Manutenção Conta
-      </label>
-      <div class="fixed-value">R$ 19,90</div>
-    </div>
-  </div>
-
-  <!-- RESULTADO -->
-  <div id="resultado" class="card result">
-    <h2>Taxas</h2>
-    <div id="result-content"></div>
-  </div>
-
-  <!-- CONTAINER PARA IMAGEM -->
-  <div id="imagem-container" class="hidden">
+  <div id="imagem-container" class="export-stage" aria-hidden="true">
     <div class="image-card">
-      <h2>Taxas Calculadas</h2>
+      <div class="image-card-header">
+        <span class="image-brand">PagPrime</span>
+        <h2>Taxas calculadas</h2>
+        <p id="image-mode-label">Simulação sem antecipação</p>
+      </div>
       <div id="image-content"></div>
-      <footer>Simulador PagPrime</footer>
+      <footer class="image-footer">Simulador profissional para compartilhamento</footer>
     </div>
   </div>
 
-  <!-- CONTAINER PARA IMAGEM -->
-  <div id="imagem-container" class="hidden">
-    <div class="image-card">
-      <h2>Taxas Calculadas</h2>
-      <div id="image-content"></div>
-      <footer>Simulador PagPrime</footer>
-    </div>
-  </div>
-  <button onclick="gerarImagem()" class="gerar">📸 Gerar Imagem</button>
-
-</div>
-
-<script src="script.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
