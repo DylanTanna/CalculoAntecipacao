@@ -90,17 +90,18 @@ function obterDadosFormulario() {
 }
 
 function criarLinhasResultado(dados) {
+    const linhas = [
+        { label: "Pix", valor: `${dados.pix.toFixed(2)}%` },
+        { label: "Débito", valor: `${dados.debito.toFixed(2)}%` }
+    ];
+
     if (!dados.antecipado) {
-        return [
-            { label: "Pix", valor: `${dados.pix.toFixed(2)}%` },
-            { label: "Débito", valor: `${dados.debito.toFixed(2)}%` },
+        return linhas.concat([
             { label: "À vista", valor: `${dados.avista.toFixed(2)}%` },
             { label: "2x a 6x", valor: `${dados.mdr_2_6.toFixed(2)}%` },
             { label: "7x a 12x", valor: `${dados.mdr_7_12.toFixed(2)}%` }
-        ];
+        ]);
     }
-
-    const linhas = [];
 
     for (let i = 1; i <= 12; i++) {
         let mdr;
@@ -145,7 +146,6 @@ function montarMarkupResultado(linhas, cobrancas) {
     const cobrancasMarkup = cobrancas.length
         ? `
             <div class="charges-summary">
-                <h3>Cobranças selecionadas</h3>
                 <div class="summary-pill-list">
                     ${cobrancas.map((item) => `<span class="summary-pill">${item}</span>`).join("")}
                 </div>
@@ -154,6 +154,91 @@ function montarMarkupResultado(linhas, cobrancas) {
         : "";
 
     return `<div class="result-list">${listaMarkup}</div>${cobrancasMarkup}`;
+}
+
+function obterMdrPorParcela(parcelas, dados) {
+    if (parcelas === 1) return dados.avista;
+    if (parcelas <= 6) return dados.mdr_2_6;
+    return dados.mdr_7_12;
+}
+
+function criarLinhasImagem(dados) {
+    const linhas = [];
+
+    for (let i = 1; i <= 12; i++) {
+        const mdr = obterMdrPorParcela(i, dados);
+        const taxa = dados.antecipado
+            ? calcularTaxaFinal(i, mdr, dados.taxaAntecipacao)
+            : arredondar2(mdr);
+
+        linhas.push({
+            label: `${i}x`,
+            valor: `${taxa.toFixed(2)}%`
+        });
+    }
+
+    return linhas;
+}
+
+function dividirLinhasImagem(linhas) {
+    return {
+        colunaEsquerda: linhas.slice(0, 6),
+        colunaDireita: linhas.slice(6, 12)
+    };
+}
+
+function montarMarkupImagem(dados) {
+    const tabela = criarLinhasImagem(dados);
+    const { colunaEsquerda, colunaDireita } = dividirLinhasImagem(tabela);
+    const aluguelMarkup = dados.aluguelAtivo
+        ? `
+            <div class="image-charge-row">
+                <div class="image-charge-copy">
+                    <span class="image-charge-icon">✓</span>
+                    <span>Aluguel da máquina</span>
+                </div>
+                <strong>R$ ${dados.aluguel.toFixed(2)}</strong>
+            </div>
+        `
+        : "";
+
+    return `
+        <div class="image-highlight-grid">
+            <div class="image-highlight-card">
+                <span class="image-highlight-label">PIX</span>
+                <strong class="image-highlight-value">${dados.pix.toFixed(2)}%</strong>
+            </div>
+            <div class="image-highlight-card">
+                <span class="image-highlight-label">DÉBITO</span>
+                <strong class="image-highlight-value">${dados.debito.toFixed(2)}%</strong>
+            </div>
+        </div>
+        <section class="image-credit-section">
+            <div class="image-credit-header">
+                <span class="image-credit-title">CRÉDITO PARCELADO</span>
+                <p class="image-credit-subtitle">Taxas com antecipação</p>
+            </div>
+            <div class="image-credit-table">
+                <div class="image-credit-column">
+                    ${colunaEsquerda.map((item, index) => `
+                        <div class="image-table-row${index % 2 === 0 ? " is-striped" : ""}">
+                            <span>${item.label}</span>
+                            <strong>${item.valor}</strong>
+                        </div>
+                    `).join("")}
+                </div>
+                <div class="image-credit-column">
+                    ${colunaDireita.map((item, index) => `
+                        <div class="image-table-row${index % 2 === 0 ? " is-striped" : ""}">
+                            <span>${item.label}</span>
+                            <strong>${item.valor}</strong>
+                        </div>
+                    `).join("")}
+                </div>
+            </div>
+        </section>
+        ${aluguelMarkup}
+    `;
 }
 
 function atualizarIndicadorModo(antecipado) {
@@ -187,7 +272,7 @@ function gerarTabela() {
         const markup = montarMarkupResultado(linhas, cobrancas);
 
         elementos.resultContent.innerHTML = markup;
-        elementos.imageContent.innerHTML = markup;
+        elementos.imageContent.innerHTML = montarMarkupImagem(dados);
 
         atualizarIndicadorModo(dados.antecipado);
     } catch (erro) {
@@ -202,22 +287,32 @@ function gerarTabela() {
 
 function gerarImagem() {
 
-    const elemento = document.querySelector("#imagem-container .image-card");
+    const elemento = document.getElementById("imageExport");
+    const stage = document.getElementById("imagem-container");
 
-    if (!elemento) {
+    if (!elemento || !stage) {
         alert("Nada para gerar imagem.");
         return;
     }
 
-    html2canvas(elemento, {
-        backgroundColor: "#ffffff",
-        scale: 2
-    }).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "taxas-pagprime.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-    });
+    // 🔥 TORNA O CONTAINER VISÍVEL
+    stage.style.opacity = "1";
+
+    setTimeout(() => {
+        html2canvas(elemento, {
+            backgroundColor: "#ffffff",
+            scale: 2
+        }).then(canvas => {
+
+            const link = document.createElement("a");
+            link.download = "taxas-pagprime.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+
+            // 🔒 VOLTA AO NORMAL
+            stage.style.opacity = "0";
+        });
+    }, 50);
 }
 
 function configurarAntecipacaoAvancada() {
@@ -256,6 +351,33 @@ function configurarAtualizacaoAutomatica() {
     });
 }
 
+function configurarCliqueCobrancas() {
+    const itens = document.querySelectorAll(".charge-item");
+
+    itens.forEach((item) => {
+        item.addEventListener("click", (event) => {
+            const alvo = event.target;
+
+            if (
+                alvo.closest("input[type='number']") ||
+                alvo.closest(".charge-text") ||
+                alvo.closest(".checkbox-wrap")
+            ) {
+                return;
+            }
+
+            const checkbox = item.querySelector("input[type='checkbox']");
+
+            if (!checkbox || alvo === checkbox) {
+                return;
+            }
+
+            checkbox.checked = !checkbox.checked;
+            gerarTabela();
+        });
+    });
+}
+
 function configurarToggleModo() {
     const { toggleAntecipacao, modeButtons } = obterElementos();
 
@@ -271,6 +393,7 @@ function iniciar() {
     configurarAntecipacaoAvancada();
     configurarToggleModo();
     configurarAtualizacaoAutomatica();
+    configurarCliqueCobrancas();
     gerarTabela();
 }
 

@@ -310,9 +310,11 @@ input[type="number"]:disabled {
 }
 
 .checkbox-wrap {
+  display: block;
   position: relative;
   width: 24px;
   height: 24px;
+  cursor: pointer;
 }
 
 .checkbox-wrap input {
@@ -321,6 +323,7 @@ input[type="number"]:disabled {
   opacity: 0;
   cursor: pointer;
   margin: 0;
+  z-index: 1;
 }
 
 .fake-checkbox {
@@ -379,6 +382,8 @@ input[type="number"]:disabled {
 .result-list {
   display: grid;
   gap: 10px;
+  width: min(100%, 680px);
+  margin: 0 auto;
 }
 
 .result-item {
@@ -405,6 +410,9 @@ input[type="number"]:disabled {
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--border);
+  width: min(100%, 680px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .charges-summary h3 {
@@ -450,8 +458,10 @@ input[type="number"]:disabled {
 
 .export-stage {
   position: fixed;
-  left: -99999px;
   top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
   width: 1080px;
   padding: 32px;
   background: #ffffff;
@@ -463,28 +473,180 @@ input[type="number"]:disabled {
   overflow: hidden;
   box-shadow: 0 28px 60px rgba(37, 42, 79, 0.18);
   border: 1px solid rgba(91, 60, 196, 0.12);
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
 }
 
 .image-card-header {
-  padding: 28px 32px 18px;
-  background: linear-gradient(135deg, rgba(91, 60, 196, 0.08), rgba(107, 192, 72, 0.08));
+  position: relative;
+  padding: 28px 30px 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbf9ff 100%);
+  text-align: left;
+}
+
+.image-brand-row {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 18px;
+}
+
+.image-section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.image-hero-copy {
+  position: relative;
+  z-index: 1;
 }
 
 .image-card-header h2 {
+  font-size: 2.3rem;
+  line-height: 1.02;
+  max-width: 360px;
+}
+
+.image-header-glow {
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 250px;
+  height: 250px;
+  border-radius: 48px;
+  background: radial-gradient(circle at center, rgba(123, 89, 240, 0.95) 0%, rgba(91, 60, 196, 0.88) 50%, rgba(91, 60, 196, 0) 72%);
+  transform: rotate(-18deg);
+}
+
+.image-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0 30px 22px;
+}
+
+.image-highlight-card {
+  border-radius: 24px;
+  padding: 18px 20px;
+  background: #f5f5f5;
+  border: 1px solid rgba(91, 60, 196, 0.08);
+}
+
+.image-highlight-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+.image-highlight-value {
+  color: var(--primary-deep);
   font-size: 2rem;
+  line-height: 1;
 }
 
-.image-card .result-list {
-  padding: 22px 32px 12px;
+.image-credit-section {
+  margin: 0 30px 18px;
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(91, 60, 196, 0.12);
+  background: #ffffff;
 }
 
-.image-card .charges-summary {
-  margin: 0 32px 24px;
-  padding-top: 18px;
+.image-credit-header {
+  background: linear-gradient(135deg, var(--primary), #7b59f0);
+  color: #ffffff;
+  padding: 16px 18px 14px;
+}
+
+.image-credit-title {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.image-credit-subtitle {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.image-credit-table {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  background: #ffffff;
+}
+
+.image-credit-column {
+  padding: 10px 12px 12px;
+}
+
+.image-table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+.image-table-row.is-striped {
+  background: #f5f5f5;
+}
+
+.image-table-row strong {
+  color: var(--primary-deep);
+}
+
+.image-charge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 30px 18px;
+  padding: 14px 18px;
+  border-radius: 20px;
+  background: #f8fcf5;
+  border: 1px solid rgba(107, 192, 72, 0.22);
+}
+
+.image-charge-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.image-charge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.82rem;
 }
 
 .image-footer {
-  padding: 0 32px 28px;
+  display: grid;
+  gap: 4px;
+  padding: 0 30px 28px;
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.image-footer strong {
+  color: var(--text);
 }
 
 @media (min-width: 860px) {
@@ -536,5 +698,44 @@ input[type="number"]:disabled {
 
   .summary-pill-list {
     display: grid;
+  }
+
+  .image-card-header {
+    padding: 24px 22px 18px;
+  }
+
+  .image-card-header h2 {
+    font-size: 1.9rem;
+    max-width: 260px;
+  }
+
+  .image-header-glow {
+    width: 180px;
+    height: 180px;
+    top: -34px;
+    right: -46px;
+  }
+
+  .image-highlight-grid {
+    grid-template-columns: 1fr;
+    padding: 0 22px 18px;
+  }
+
+  .image-credit-section {
+    margin: 0 22px 16px;
+  }
+
+  .image-credit-table {
+    grid-template-columns: 1fr;
+  }
+
+  .image-charge-row {
+    margin: 0 22px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .image-footer {
+    padding: 0 22px 24px;
   }
 }

@@ -76,10 +76,10 @@
         <div class="charges-list">
           <div class="charge-item">
             <div class="charge-topline">
-              <div class="checkbox-wrap">
+              <label class="checkbox-wrap">
                 <input type="checkbox" id="aluguelToggle">
                 <span class="fake-checkbox"></span>
-              </div>
+              </label>
               <label class="charge-text" for="aluguelToggle">
                 <strong>Aluguel da máquina</strong>
                 <span>Aplicar custo mensal no resumo</span>
@@ -90,10 +90,10 @@
 
           <div class="charge-item">
             <div class="charge-topline">
-              <div class="checkbox-wrap">
+              <label class="checkbox-wrap">
                 <input type="checkbox" id="manutencaoToggle">
                 <span class="fake-checkbox"></span>
-              </div>
+              </label>
               <label class="charge-text" for="manutencaoToggle">
                 <strong>Manutenção da conta</strong>
                 <span>Taxa fixa mensal adicional</span>
@@ -136,14 +136,23 @@
   </main>
 
   <div id="imagem-container" class="export-stage" aria-hidden="true">
-    <div class="image-card">
+    <div id="imageExport" class="image-card">
       <div class="image-card-header">
-        <span class="image-brand">PagPrime</span>
-        <h2>Taxas calculadas</h2>
-        <p id="image-mode-label">Simulação sem antecipação</p>
+        <div class="image-brand-row">
+          <span class="image-brand">PagPrime</span>
+        </div>
+        <div class="image-hero-copy">
+          <p class="image-section-title">Simulação de taxas</p>
+          <h2>Taxas claras para o seu negócio</h2>
+          <p>Confira as taxas aplicadas para recebimentos.</p>
+        </div>
+        <div class="image-header-glow" aria-hidden="true"></div>
       </div>
       <div id="image-content"></div>
-      <footer class="image-footer">Simulador profissional para compartilhamento</footer>
+      <footer class="image-footer">
+        <strong>Segurança e transparência em cada transação.</strong>
+        <span>Condições sujeitas a análise e aprovação.</span>
+      </footer>
     </div>
   </div>
 
