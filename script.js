@@ -9,7 +9,7 @@ function parseNumero(valor) {
 
     const limpo = String(valor)
         .trim()
-        .replace(/\./g, "")
+        .replace("%", "")
         .replace(",", ".");
 
     const num = Number(limpo);
